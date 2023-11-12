@@ -1,0 +1,22 @@
+nohup: ignoring input
+[2023-10-24 19:30:50 +0000] [174166] [INFO] Starting gunicorn 21.2.0
+[2023-10-24 19:30:50 +0000] [174166] [INFO] Listening at: http://0.0.0.0:8000 (174166)
+[2023-10-24 19:30:50 +0000] [174166] [INFO] Using worker: sync
+[2023-10-24 19:30:50 +0000] [174168] [INFO] Booting worker with pid: 174168
+[2023-10-24 19:30:50 +0000] [174169] [INFO] Booting worker with pid: 174169
+[2023-10-24 19:30:50 +0000] [174170] [INFO] Booting worker with pid: 174170
+[2023-10-24 19:30:51 +0000] [174171] [INFO] Booting worker with pid: 174171
+[2023-10-26 00:40:43 +0000] [174166] [ERROR] Worker (pid:174168) was sent SIGHUP!
+[2023-10-26 00:40:43 +0000] [174166] [ERROR] Worker (pid:174169) was sent SIGHUP!
+[2023-10-26 00:40:43 +0000] [174166] [ERROR] Worker (pid:174170) was sent SIGHUP!
+[2023-10-26 00:40:43 +0000] [174166] [ERROR] Worker (pid:174171) was sent SIGHUP!
+[2023-10-26 00:40:43 +0000] [260409] [INFO] Booting worker with pid: 260409
+[2023-10-26 00:40:43 +0000] [260416] [INFO] Booting worker with pid: 260416
+[2023-10-26 00:40:43 +0000] [260436] [INFO] Booting worker with pid: 260436
+[2023-10-26 00:40:43 +0000] [174166] [INFO] Handling signal: term
+[2023-10-26 00:40:44 +0000] [260445] [INFO] Booting worker with pid: 260445
+[2023-10-26 00:40:45 +0000] [260436] [INFO] Worker exiting (pid: 260436)
+[2023-10-26 00:40:45 +0000] [260416] [INFO] Worker exiting (pid: 260416)
+[2023-10-26 00:40:45 +0000] [260409] [INFO] Worker exiting (pid: 260409)
+[2023-10-26 00:41:14 +0000] [174166] [ERROR] Worker (pid:260445) was sent SIGKILL! Perhaps out of memory?
+[2023-10-26 00:41:14 +0000] [174166] [INFO] Shutting down: Master
