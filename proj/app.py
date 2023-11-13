@@ -1,4 +1,4 @@
-from flask import Flask, render_template, jsonify
+from flask import Flask, render_template, jsonify, render_template
 import sqlite3
 import requests
 
@@ -7,7 +7,7 @@ app = Flask(__name__)
 @app.route("/")
 @app.route("/home")
 def home(): 
-    return "Hello"
+    return render_template('home.html')
 
 @app.route("/newsfeed")
 def newsfeed():
@@ -16,7 +16,7 @@ def newsfeed():
     news = " SELECT * FROM hackernews_data ORDER BY time DESC LIMIT 30"
     cursor.execute(news)
     items = cursor.fetchall()
-    item_fields = ['id', 'by', 'descendants', 'kids', 'score', 'text', 'time', 'title', 'type']
+    item_fields = ['id', 'by', 'descendants', 'kids', 'score', 'text', 'time', 'title', 'type', 'url']
     data = [dict(zip(item_fields, news)) for news in items]
     con.close()
     return jsonify(data)
