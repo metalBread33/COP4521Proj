@@ -23,15 +23,16 @@ def newsfeed():
 
 @app.route("/admin")
 def admin():
-    return "Admin page"
+    return render_template('admin.html')
 
 @app.route("/login")
 def login():
-    return "Login page"
+    return render_template('login.html')
+   
 
 @app.route("/signup")
 def signup():
-    return "Sign up page"
+    return render_template('signup.html')
 
 
 
