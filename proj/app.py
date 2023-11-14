@@ -1,9 +1,23 @@
 from flask import Flask, render_template, jsonify, render_template
-
+from flask_sqlalchemy import SQLAlchemy 
 import sqlite3
 import requests
 
-app = Flask(__name__)
+app = Flask(__name__, static_url_path='/static')
+
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hackernews_data.db'
+
+db = SQLAlchemy(app)
+
+class hackernews_data(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    by = db.Column(db.Text)
+    title = db.Column(db.Text)
+
+    def __repr__(self):
+        return f"NewsShit('{self.title}')"
+
+
 
 @app.route("/")
 @app.route("/home")
@@ -20,7 +34,7 @@ def newsfeed():
     item_fields = ['id', 'by', 'descendants', 'kids', 'score', 'text', 'time', 'title', 'type', 'url']
     data = [dict(zip(item_fields, news)) for news in items]
     con.close()
-    return jsonify(data)
+    return render_template('newsfeed.html', data=data)
 
 @app.route("/admin")
 def admin():

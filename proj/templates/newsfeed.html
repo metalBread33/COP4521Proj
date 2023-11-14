@@ -1,0 +1,19 @@
+{% extends "layout.html" %}
+
+{%block title%}
+<title>GSPFMB Newsfeed</title>
+{% endblock %}
+
+{%block content%}
+<h1>BADASS NEWS</h1>
+<table border="1" style="width:100%">
+    <tr>
+        <th>Title</th>
+    </tr>
+    {% for item in data %}
+    <tr>
+        <td>{{item.title}}</td> 
+    </tr>
+    {%endfor%}
+</table>
+{% endblock %}
