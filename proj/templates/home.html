@@ -5,12 +5,15 @@
 {% endblock %}
 
 {% block content %}
-	<h1>KEVIN'S BADASS WEBSITE FOR HIS BS CLASS !!!!!!!</h1>
-	<a href="login">Login</a>
-	<p></p> <!--This is for a new line-->
-	<a href="signup">Sign Up</a>
-	<p></p>
+	{% if session %}
+      <h1>Welcome {{session.userinfo.name}}! to Kevin's badass website for he bullshit ass class</h1>
+      <p><a href="/logout">Logout</a></p>
+  {% else %}
+    <h1>Welcome Guest</h1>
+    <p><a href="/login">Login</a></p>
+  {% endif %}
 	<a href="admin">Admin</a>
 	<p></p>
-	<a href="newsfeed">Newsfeed</a>
-{%endblock%}
+	<a href="newsfeed">Newsfeed</a> 
+
+{%endblock%}  
