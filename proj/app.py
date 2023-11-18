@@ -31,17 +31,6 @@ oauth.register(
     server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration'
 )
 
-
-class hackernews_data(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    by = db.Column(db.Text)
-    title = db.Column(db.Text)
-
-    def __repr__(self):
-        return f"NewsShit('{self.title}')"
-
-
-
 @app.route("/")
 @app.route("/home")
 def home(): 
@@ -54,7 +43,7 @@ def newsfeed():
     news = " SELECT * FROM hackernews_data ORDER BY time DESC LIMIT 30"
     cursor.execute(news)
     items = cursor.fetchall()
-    item_fields = ['id', 'by', 'descendants', 'kids', 'score', 'text', 'time', 'title', 'type', 'url']
+    item_fields = ['id', 'by', 'descendants', 'kids', 'score', 'text', 'time', 'title', 'type', 'url', 'likes', 'dislikes']
     data = [dict(zip(item_fields, news)) for news in items]
     con.close()
     return render_template('newsfeed.html', data=data)
@@ -62,6 +51,10 @@ def newsfeed():
 @app.route("/admin")
 def admin():
     return render_template('admin.html')
+
+@app.route("/profile")
+def profile():
+    return render_template('profile.html', session=session.get('user'))
 
 @app.route("/login")
 def login():
@@ -90,7 +83,14 @@ def logout():
         )
     )
 
+@app.route("/like")
+def like(likeCount):
+    return""    
+
+@app.route ("/dislike")
+def dislike():
+    return ""
+
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=env.get("PORT", 3000), debug=True)
-
 

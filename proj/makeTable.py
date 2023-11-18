@@ -16,7 +16,9 @@ CREATE TABLE IF NOT EXISTS hackernews_data (
     time INTEGER,
     title TEXT,
     type TEXT,
-    url TEXT
+    url TEXT,
+    likes INTEGER DEFAULT 0,
+    dislikes INTEGER DEFAULT 0
 );
 """
 

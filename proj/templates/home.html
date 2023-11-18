@@ -6,14 +6,16 @@
 
 {% block content %}
 	{% if session %}
-      <h1>Welcome {{session.userinfo.name}}! to Kevin's badass website for he bullshit ass class</h1>
+    <h1>Welcome {{session.userinfo.name}} to Kevin's badass website for his bullshit ass class!</h1>
       <p><a href="/logout">Logout</a></p>
+      <p><a href="profile">View Profile</a></p>
   {% else %}
-    <h1>Welcome Guest</h1>
+    <h1>Welcome guest to Kevin's badass website for his bullshit ass class!</h1>
     <p><a href="/login">Login</a></p>
   {% endif %}
 	<a href="admin">Admin</a>
 	<p></p>
 	<a href="newsfeed">Newsfeed</a> 
+  <p></p>
 
 {%endblock%}  

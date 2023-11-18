@@ -8,8 +8,8 @@ cursor = conn.cursor()
 
 # Define the SQL command to insert data into the table, using INSERT OR IGNORE
 insert_data_sql = """
-INSERT OR IGNORE INTO hackernews_data (id, by, descendants, kids, score, text, time, title, type, url)
-VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?);
+INSERT OR IGNORE INTO hackernews_data (id, by, descendants, kids, score, text, time, title, type, url, likes, dislikes)
+VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, 0, 0);
 """
 
 # Define the HackerNews API URL to fetch the latest item IDs

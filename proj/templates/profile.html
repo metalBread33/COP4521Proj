@@ -1,0 +1,12 @@
+{% extends "layout.html" %}
+
+{%block title%} <!--Block for title info-->
+    <title> {{session.userinfo.name}}  Profile</title>
+{%endblock%}
+
+{%block content%} <!--Block for html content-->
+    <h1>{{session.userinfo.name}} Profile page</h1>
+    <p>Username: {{session.userinfo.name}}</p>
+    <p>User email: {{session.userinfo.email}}</p>
+    
+{%endblock%}
