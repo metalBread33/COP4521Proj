@@ -50,7 +50,7 @@ def newsfeed():
 
 @app.route("/admin")
 def admin():
-    return render_template('admin.html')
+    return render_template('admin.html', session=session.get('user'))
 
 @app.route("/profile")
 def profile():

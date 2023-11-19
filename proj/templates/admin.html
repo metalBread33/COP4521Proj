@@ -4,5 +4,17 @@
 {% endblock %}
 
 {% block content %}
-	<h1>Admin page</h1>
+	{%if session %}
+		{%if session.userinfo.email == 'kfoughty80@gmail.com'%}
+			<h1>Admin Page</h1>
+		{%else%}
+		<h1>ERROR 403 FORBIDDEN</h1>
+		<p>You must be a certified administrator to view this page</p>
+		<img src="static/e403.jpg">
+		{%endif%}
+	{%else %}
+	<h1>ERROR 403 FORBIDDEN</h1>
+	<p>You must be a certified administrator to view this page</p>
+	<img src="static/e403.jpg">
+	{%endif%}
 {%endblock%}
