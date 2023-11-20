@@ -40,7 +40,7 @@ def home():
 def newsfeed():
     con = sqlite3.connect("hackernews_data.db")
     cursor = con.cursor()
-    news = " SELECT * FROM hackernews_data ORDER BY time DESC LIMIT 30"
+    news = " SELECT * FROM hackernews_data ORDER BY likes DESC LIMIT 30"
     cursor.execute(news)
     items = cursor.fetchall()
     item_fields = ['id', 'by', 'descendants', 'kids', 'score', 'text', 'time', 'title', 'type', 'url', 'likes', 'dislikes']
@@ -91,13 +91,41 @@ def logout():
         )
     )
 
-@app.route("/like")
-def like(likeCount):
-    return""    
+@app.route("/like/<item_id>", methods=["GET", "POST"])
+def like(item_id):
+    con = sqlite3.connect("hackernews_data.db")
+    cursor = con.cursor()
 
-@app.route ("/dislike")
-def dislike():
-    return ""
+    item_to_like_query = "SELECT * FROM hackernews_data WHERE id = ?"
+    cursor.execute(item_to_like_query, (item_id,))
+
+    item_to_like = cursor.fetchone()
+    if item_to_like:
+        updated_likes = item_to_like[10] + 1
+        update_query = "UPDATE hackernews_data SET likes = ? WHERE id = ?"
+        cursor.execute(update_query, (updated_likes, item_id))
+        con.commit()
+        return redirect (url_for("newsfeed"))
+    else:      
+        return "Item not found", 404
+    
+@app.route ("/dislike/<item_id>", methods=["GET", "POST"])
+def dislike(item_id):
+    con = sqlite3.connect("hackernews_data.db")
+    cursor = con.cursor()
+
+    item_to_dislike_query = "SELECT * FROM hackernews_data WHERE id = ?"
+    cursor.execute(item_to_dislike_query, (item_id,))
+
+    item_to_dislike = cursor.fetchone()
+    if item_to_dislike:
+        updated_dislikes = item_to_dislike[10] + 1
+        update_query = "UPDATE hackernews_data SET dislikes = ? WHERE id = ?"
+        cursor.execute(update_query, (updated_dislikes, item_id))
+        con.commit()
+        return redirect (url_for("newsfeed"))
+    else:      
+        return "Item not found", 404
 
 
 @app.route("/delete/<item_id>", methods=["GET", "POST"])

@@ -5,7 +5,7 @@
 {% endblock %}
 
 {%block content%}
-<h1>BADASS NEWS</h1>
+<h1>NEWS</h1>
 <table border="1" style="width:100%">
     <tr>
         <th>Title</th>
@@ -18,8 +18,8 @@
     <tr>
         <td><a href="{{item.url}}">{{item.title}}</a></td>
         <td>{{item.by}}</td>
-        <td><a href="/like">{{item.likes}}</a></td>
-        <td>{{item.dislikes}}</td>
+        <td><a href="{{ url_for('like', item_id=item.id) }}">{{item.likes}}</a></td>
+        <td> <a href="{{url_for('dislike', item_id=item.id)}}">{{item.dislikes}}</a></td>
         <td>{{item.time}}</td>
     </tr>
     {%endfor%}

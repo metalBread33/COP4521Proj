@@ -38,28 +38,5 @@
 	<p>You must be a certified administrator to view this page</p>
 	<img src="static/e403.jpg">
 	{%endif%}
-	<script>
-		document.getElementById("deleteButton").addEventListener("click", function() {
-			var itemId = this.getAttribute("data-item-id");
-	
-			fetch("/delete", {
-				method: "POST",
-				headers: {
-					"Content-Type": "application/x-www-form-urlencoded",
-				},
-				body: "item_id=" + itemId,
-			})
-			.then(response => {
-				if (response.ok) {
-					window.location.href = "/admin";
-				} else {
-					console.error("Error:", response.statusText);
-				}
-			})
-			.catch(error => {
-				console.error("Error:", error);
-			});
-		});
-	</script>
-{%endblock%}
+	{%endblock%}
 

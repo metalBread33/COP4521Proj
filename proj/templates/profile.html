@@ -1,12 +1,21 @@
 {% extends "layout.html" %}
 
 {%block title%} <!--Block for title info-->
-    <title> {{session.userinfo.name}}  Profile</title>
+    {%if session %}
+        <title> {{session.userinfo.name}}  Profile</title>
+    {%else%}
+        <title>Potential user info page</title>
+    {%endif%}
 {%endblock%}
 
 {%block content%} <!--Block for html content-->
-    <h1>{{session.userinfo.name}} Profile page</h1>
-    <p>Username: {{session.userinfo.name}}</p>
-    <p>User email: {{session.userinfo.email}}</p>
-    
+    {%if session %}
+        <h1>{{session.userinfo.name}} Profile page</h1>
+        <p>Username: {{session.userinfo.name}}</p>
+        <p>User email: {{session.userinfo.email}}</p>
+    {%else%}
+        <h1>Please log in or signup to make use of this feature</h1>
+    {%endif%}
 {%endblock%}
+
+
