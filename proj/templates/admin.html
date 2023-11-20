@@ -7,6 +7,27 @@
 	{%if session %}
 		{%if session.userinfo.email == 'kfoughty80@gmail.com'%}
 			<h1>Admin Page</h1>
+			<table border="1" style="width:100%">
+				<tr>
+					<th>Title</th>
+					<th>By</th>
+					<th>Likes</th>
+					<th>Dislikes</th>
+					<th>Time Since Epoch Posted</th>
+					<th>Delete?</th>
+				</tr>
+				{% for item in data %}
+				<tr>
+					<td><a href="{{item.url}}">{{item.title}}</a></td>
+					<td>{{item.by}}</td>
+					<td>{{item.likes}}</td>
+					<td>{{item.dislikes}}</td>
+					<td>{{item.time}}</td>
+					<td><a href="{{ url_for ('delete', item_id=item.id) }}">Delete</a></td>
+				</tr>
+				{%endfor%}
+			</table>
+
 		{%else%}
 		<h1>ERROR 403 FORBIDDEN</h1>
 		<p>You must be a certified administrator to view this page</p>
@@ -17,4 +38,28 @@
 	<p>You must be a certified administrator to view this page</p>
 	<img src="static/e403.jpg">
 	{%endif%}
+	<script>
+		document.getElementById("deleteButton").addEventListener("click", function() {
+			var itemId = this.getAttribute("data-item-id");
+	
+			fetch("/delete", {
+				method: "POST",
+				headers: {
+					"Content-Type": "application/x-www-form-urlencoded",
+				},
+				body: "item_id=" + itemId,
+			})
+			.then(response => {
+				if (response.ok) {
+					window.location.href = "/admin";
+				} else {
+					console.error("Error:", response.statusText);
+				}
+			})
+			.catch(error => {
+				console.error("Error:", error);
+			});
+		});
+	</script>
 {%endblock%}
+

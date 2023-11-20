@@ -19,7 +19,7 @@ app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hackernews_data.db'
 
 db = SQLAlchemy(app)
 
-oauth = OAuth(app)
+oauth = OAuth(app)  
 
 oauth.register(
     "auth0",
@@ -50,7 +50,15 @@ def newsfeed():
 
 @app.route("/admin")
 def admin():
-    return render_template('admin.html', session=session.get('user'))
+    con = sqlite3.connect("hackernews_data.db")
+    cursor = con.cursor()
+    news = " SELECT * FROM hackernews_data ORDER BY time DESC LIMIT 30"
+    cursor.execute(news)
+    items = cursor.fetchall()
+    item_fields = ['id', 'by', 'descendants', 'kids', 'score', 'text', 'time', 'title', 'type', 'url', 'likes', 'dislikes']
+    data = [dict(zip(item_fields, news)) for news in items]
+    con.close()
+    return render_template('admin.html', session=session.get('user'), data=data)
 
 @app.route("/profile")
 def profile():
@@ -90,6 +98,32 @@ def like(likeCount):
 @app.route ("/dislike")
 def dislike():
     return ""
+
+
+@app.route("/delete/<item_id>", methods=["GET", "POST"])
+def delete(item_id):
+    con = sqlite3.connect("hackernews_data.db")
+    cursor = con.cursor()
+
+    # Use placeholders in the query to avoid SQL injection
+    item_to_delete_query = "SELECT * FROM hackernews_data WHERE id = ?"
+    cursor.execute(item_to_delete_query, (item_id,))
+    
+    # Fetch one row from the result
+    item_to_delete = cursor.fetchone()
+
+    if item_to_delete:
+        # Use the correct syntax for DELETE statement
+        delete_query = "DELETE FROM hackernews_data WHERE id = ?"
+        cursor.execute(delete_query, (item_id,))
+        
+        con.commit()  # Commit the changes to the database
+        con.close()   # Close the connection
+        
+        return redirect("/admin")
+    else:
+        con.close()   # Close the connection
+        return "Item not found", 404
 
 if __name__ == "__main__":
     app.run(host="0.0.0.0", port=env.get("PORT", 3000), debug=True)
