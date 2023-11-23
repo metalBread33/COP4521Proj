@@ -1,11 +1,12 @@
+"""This creates the table that the articles are stored in."""
 import sqlite3
 
 # Connect to the SQLite database (or create it if it doesn't exist)
-conn = sqlite3.connect("hackernews_data.db")
-cursor = conn.cursor()
+CONNECTION = sqlite3.connect("hackernews_data.db")
+CURSOR = CONNECTION.cursor()
 
 # Define the SQL command to create the table
-create_table_sql = """
+CREATE_QUERY = """
 CREATE TABLE IF NOT EXISTS hackernews_data (
     id INTEGER PRIMARY KEY,
     by TEXT,
@@ -23,9 +24,8 @@ CREATE TABLE IF NOT EXISTS hackernews_data (
 """
 
 # Execute the SQL command to create the table
-cursor.execute(create_table_sql)
+CURSOR.execute(CREATE_QUERY)
 
 # Commit the changes and close the connection
-conn.commit()
-conn.close()
-
+CONNECTION.commit()
+CONNECTION.close()
