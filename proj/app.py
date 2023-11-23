@@ -1,27 +1,28 @@
-from flask import Flask, render_template, jsonify, redirect, session, url_for
-from flask_sqlalchemy import SQLAlchemy 
+"""This is a webapp for a project for a python class. Pylint requires a docstring for
+what ever reason"""
 import sqlite3
-import requests
 import json
 from os import environ as env
 from urllib.parse import quote_plus, urlencode
+from flask import Flask, render_template, jsonify, redirect, session, url_for
+from flask_sqlalchemy import SQLAlchemy
 from authlib.integrations.flask_client import OAuth
 from dotenv import find_dotenv, load_dotenv
 
-app = Flask(__name__, static_url_path='/static')
+APP = Flask(__name__, static_url_path='/static')
 ENV_FILE = find_dotenv()
 if ENV_FILE:
     load_dotenv(ENV_FILE)
 
-app.secret_key = env.get("APP_SECRET_KEY")
+APP.secret_key = env.get("APP_SECRET_KEY")
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hackernews_data.db'
+APP.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///hackernews_data.db'
 
-db = SQLAlchemy(app)
+DATABASE = SQLAlchemy(APP)
 
-oauth = OAuth(app)  
+OAUTH = OAuth(APP)
 
-oauth.register(
+OAUTH.register(
     "auth0",
     client_id=env.get("AUTH0_CLIENT_ID"),
     client_secret=env.get("AUTH0_CLIENT_SECRET"),
@@ -31,53 +32,77 @@ oauth.register(
     server_metadata_url=f'https://{env.get("AUTH0_DOMAIN")}/.well-known/openid-configuration'
 )
 
-@app.route("/")
-@app.route("/home")
-def home(): 
-    return render_template("home.html", session=session.get('user'), pretty=json.dumps(session.get('user'), indent=4))
+@APP.route("/")
+@APP.route("/home")
+def home():
+    """Allows users to go to home page"""
+    return render_template("home.html", session=session.get('user'),
+                           pretty=json.dumps(session.get('user'), indent=4))
 
-@app.route("/newsfeed")
+@APP.route("/newsfeed")
 def newsfeed():
+    """For using the curl cmd to get articles in json format"""
     con = sqlite3.connect("hackernews_data.db")
     cursor = con.cursor()
-    news = " SELECT * FROM hackernews_data ORDER BY likes DESC LIMIT 30"
-    cursor.execute(news)
+    articles = " SELECT * FROM hackernews_data ORDER BY likes DESC LIMIT 30"
+    cursor.execute(articles)
     items = cursor.fetchall()
-    item_fields = ['id', 'by', 'descendants', 'kids', 'score', 'text', 'time', 'title', 'type', 'url', 'likes', 'dislikes']
+    item_fields = ['id', 'by', 'descendants', 'kids', 'score', 'text', 'time', 'title', 'type',
+                   'url', 'likes', 'dislikes']
+    data = [dict(zip(item_fields, news)) for news in items]
+    con.close()
+    return jsonify(data)
+
+@APP.route("/news")
+def news():
+    """For presenting new articles to the user"""
+    con = sqlite3.connect("hackernews_data.db")
+    cursor = con.cursor()
+    articles = " SELECT * FROM hackernews_data ORDER BY likes DESC LIMIT 30"
+    cursor.execute(articles)
+    items = cursor.fetchall()
+    item_fields = ['id', 'by', 'descendants', 'kids', 'score', 'text', 'time', 'title', 'type',
+                   'url', 'likes', 'dislikes']
     data = [dict(zip(item_fields, news)) for news in items]
     con.close()
     return render_template('newsfeed.html', data=data)
 
-@app.route("/admin")
+@APP.route("/admin")
 def admin():
+    """For allowing appropriate users to access admin page"""
     con = sqlite3.connect("hackernews_data.db")
     cursor = con.cursor()
-    news = " SELECT * FROM hackernews_data ORDER BY time DESC LIMIT 30"
-    cursor.execute(news)
+    articles = " SELECT * FROM hackernews_data ORDER BY time DESC LIMIT 30"
+    cursor.execute(articles)
     items = cursor.fetchall()
-    item_fields = ['id', 'by', 'descendants', 'kids', 'score', 'text', 'time', 'title', 'type', 'url', 'likes', 'dislikes']
+    item_fields = ['id', 'by', 'descendants', 'kids', 'score', 'text', 'time', 'title', 'type',
+                   'url', 'likes', 'dislikes']
     data = [dict(zip(item_fields, news)) for news in items]
     con.close()
     return render_template('admin.html', session=session.get('user'), data=data)
 
-@app.route("/profile")
+@APP.route("/profile")
 def profile():
+    """For presenting user info"""
     return render_template('profile.html', session=session.get('user'))
 
-@app.route("/login")
+@APP.route("/login")
 def login():
-    return oauth.auth0.authorize_redirect(
+    """For allowing users to login with auth0"""
+    return OAUTH.auth0.authorize_redirect(
         redirect_uri=url_for("callback", _external=True)
     )
 
-@app.route("/callback", methods=["GET", "POST"])
+@APP.route("/callback", methods=["GET", "POST"])
 def callback():
-    token = oauth.auth0.authorize_access_token()
+    """Where user returns after using auth0"""
+    token = OAUTH.auth0.authorize_access_token()
     session["user"] = token
     return redirect("/")
 
-@app.route("/logout")
+@APP.route("/logout")
 def logout():
+    """Allow user to logout using auth0"""
     session.clear()
     return redirect(
         "https://" + env.get("AUTH0_DOMAIN")
@@ -91,8 +116,9 @@ def logout():
         )
     )
 
-@app.route("/like/<item_id>", methods=["GET", "POST"])
+@APP.route("/like/<item_id>", methods=["GET", "POST"])
 def like(item_id):
+    """Allow user to like an item"""
     con = sqlite3.connect("hackernews_data.db")
     cursor = con.cursor()
 
@@ -105,12 +131,12 @@ def like(item_id):
         update_query = "UPDATE hackernews_data SET likes = ? WHERE id = ?"
         cursor.execute(update_query, (updated_likes, item_id))
         con.commit()
-        return redirect (url_for("newsfeed"))
-    else:      
-        return "Item not found", 404
-    
-@app.route ("/dislike/<item_id>", methods=["GET", "POST"])
+        return redirect(url_for("newsfeed"))
+    return "Item not found", 404
+
+@APP.route("/dislike/<item_id>", methods=["GET", "POST"])
 def dislike(item_id):
+    """Allow user to dislike an item"""
     con = sqlite3.connect("hackernews_data.db")
     cursor = con.cursor()
 
@@ -123,20 +149,20 @@ def dislike(item_id):
         update_query = "UPDATE hackernews_data SET dislikes = ? WHERE id = ?"
         cursor.execute(update_query, (updated_dislikes, item_id))
         con.commit()
-        return redirect (url_for("newsfeed"))
-    else:      
-        return "Item not found", 404
+        return redirect(url_for("newsfeed"))
+    return "Item not found", 404
 
 
-@app.route("/delete/<item_id>", methods=["GET", "POST"])
+@APP.route("/delete/<item_id>", methods=["GET", "POST"])
 def delete(item_id):
+    """Allows admin to delete an item"""
     con = sqlite3.connect("hackernews_data.db")
     cursor = con.cursor()
 
     # Use placeholders in the query to avoid SQL injection
     item_to_delete_query = "SELECT * FROM hackernews_data WHERE id = ?"
     cursor.execute(item_to_delete_query, (item_id,))
-    
+
     # Fetch one row from the result
     item_to_delete = cursor.fetchone()
 
@@ -144,15 +170,11 @@ def delete(item_id):
         # Use the correct syntax for DELETE statement
         delete_query = "DELETE FROM hackernews_data WHERE id = ?"
         cursor.execute(delete_query, (item_id,))
-        
         con.commit()  # Commit the changes to the database
         con.close()   # Close the connection
-        
         return redirect("/admin")
-    else:
-        con.close()   # Close the connection
-        return "Item not found", 404
+    con.close()   # Close the connection
+    return "Item not found", 404
 
 if __name__ == "__main__":
-    app.run(host="0.0.0.0", port=env.get("PORT", 3000), debug=True)
-
+    APP.run(host="0.0.0.0", port=env.get("PORT", 3000), debug=True)
